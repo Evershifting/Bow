@@ -365,7 +365,9 @@ public class bowAndArrow : MonoBehaviour
             arrowPosition.x = (arrowStartX - length);
             arrow.transform.localPosition = arrowPosition;
 
-            //Строим траекторию от текующей позиции стрелы
+
+            //Удаляем старую траекторию и строим новую от текующей позиции стрелы
+            trajectoryScript.CleanTrajectory();
             trajectoryScript.DrawTrajectory(angleZ, baseForce, length, arrowPosition);
         }
         arrowPrepared = true;
