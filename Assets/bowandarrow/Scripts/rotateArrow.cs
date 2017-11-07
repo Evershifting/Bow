@@ -1,19 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 // this class steers the arrow and its behaviour
 
 
 public class rotateArrow : MonoBehaviour
 {
-
-    // register collision
-    bool collisionOccurred;
-
     // References to GameObjects gset in the inspector
     public GameObject arrowHead;
     public GameObject risingText;
     public GameObject bow;
+    public GameObject trail;
 
     // Reference to audioclip when target is hit
     public AudioClip targetHit;
@@ -50,25 +48,10 @@ public class rotateArrow : MonoBehaviour
                 float angleZ = Mathf.Atan2(vel.y, vel.x) * Mathf.Rad2Deg;
                 // rotate the arrow according to the trajectory
                 transform.eulerAngles = new Vector3(0, 0, angleZ);
+                ActivateTrail();
             }
         }
 
-        // if the arrow hit something...
-        if (collisionOccurred)
-        {
-            // fade the arrow out
-            alpha -= Time.deltaTime * life_loss;
-            GetComponent<Renderer>().material.color = new Color(color.r, color.g, color.b, alpha);
-
-            // if completely faded out, die:
-            if (alpha <= 0f)
-            {
-                // create new arrow
-                bow.GetComponent<bowAndArrow>().createArrow(true);
-                // and destroy the current one
-                Destroy(gameObject);
-            }
-        }
     }
 
 
@@ -85,15 +68,6 @@ public class rotateArrow : MonoBehaviour
         float y;
         // we have to determine a score
         int actScore = 0;
-
-        //so, did a collision occur already?
-        if (collisionOccurred)
-        {
-            // fix the arrow and let it not move anymore
-            transform.position = new Vector3(other.transform.position.x, transform.position.y, transform.position.z);
-            // the rest of the method hasn't to be calculated
-            return;
-        }
 
         // I installed cubes as border collider outside the screen
         // If the arrow hits these objects, the player lost an arrow
@@ -114,8 +88,7 @@ public class rotateArrow : MonoBehaviour
             // disable the rigidbody
             GetComponent<Rigidbody>().isKinematic = true;
             transform.GetComponent<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
-            // and a collision occurred
-            collisionOccurred = true;
+
             // disable the arrow head to create optical illusion
             // that arrow hit the target
             arrowHead.SetActive(false);
@@ -149,7 +122,23 @@ public class rotateArrow : MonoBehaviour
             rt.GetComponent<TextMesh>().text = "+" + actScore;
             // inform the master script about the score
             bow.GetComponent<bowAndArrow>().setPoints(actScore);
+            //Работа со стрелой в мишени
+            CollisionWithTarget(other.transform, y);
         }
+    }
+
+
+    private void CollisionWithTarget(Transform target, float y)
+    {
+        name = "Arrow in Target";                           //имя меняется, чтобы не конфликтовать с поиском по имени в оригинальном коде
+        bow.GetComponent<bowAndArrow>().createArrow(true);  //при попадании сразу же готовится следующий выстрел
+        trail.SetActive(false);                             //отключение следа, на случай если мишень в дальнейшем будет подвижной
+        transform.SetParent(target);                        //стрела остается в мишени 
+        //вычисление координат стрелы
+        float xDisplacement = transform.right.x;
+        float yDisplacement = transform.right.y - y;
+        Vector3 displacement = new Vector3(xDisplacement, yDisplacement, 0);
+        transform.position = target.position - displacement;
     }
 
 
@@ -157,9 +146,18 @@ public class rotateArrow : MonoBehaviour
     // public void setBow
     //
     // set a reference to the main game object 
-
     public void setBow(GameObject _bow)
     {
         bow = _bow;
+    }
+
+    //
+    // public void ActivateTrail
+    //
+    // Activate a trail game object 
+    public void ActivateTrail()
+    {
+        if (!trail.activeSelf)
+            trail.SetActive(true);
     }
 }

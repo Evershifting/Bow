@@ -319,8 +319,8 @@ public class bowAndArrow : MonoBehaviour
             arrow.AddComponent<Rigidbody>();
             arrow.transform.parent = gameManager.transform;
 
-            arrow.GetComponent<Rigidbody>().AddForce(Quaternion.Euler(new 
-                Vector3(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z)) 
+            arrow.GetComponent<Rigidbody>().AddForce(Quaternion.Euler(new
+                Vector3(transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z))
                 * new Vector3(baseForce * length, 0, 0), ForceMode.VelocityChange);
         }
         arrowPrepared = false;
@@ -352,8 +352,8 @@ public class bowAndArrow : MonoBehaviour
             Vector2 mousePos = new Vector2(transform.position.x - posX, transform.position.y - posY);
             float angleZ = Mathf.Atan2(mousePos.y, mousePos.x) * Mathf.Rad2Deg;
             transform.eulerAngles = new Vector3(0, 0, angleZ);
-            
-            
+
+
 
             // determine the arrow pullout
             length = mousePos.magnitude / 3f;

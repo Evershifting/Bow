@@ -6,7 +6,7 @@ public class TrajectoryProjection : MonoBehaviour
 {
     public GameObject trajectoryPointerPrefab;
     public Transform trajectoryStart, trajectoryParent;
-    List<GameObject> trajectory;
+    List<GameObject> trajectory = new List<GameObject>();
     public int pointNumber = 30; //количество "точек" в траектории
 
     //расчет позиции каждого из идикаторов траектории и добавление их в список
@@ -28,11 +28,14 @@ public class TrajectoryProjection : MonoBehaviour
     //очистка траектории
     public void CleanTrajectory()
     {
-        if (trajectory.Count > 0)
-            for (int i = pointNumber - 1; i >= 0; i--)
-            {
-                Destroy(trajectory[i]);
-            }
-        trajectory.Clear();
+        if (trajectory != null)
+        {
+            if (trajectory.Count > 0)
+                for (int i = pointNumber - 1; i >= 0; i--)
+                {
+                    Destroy(trajectory[i]);
+                }
+            trajectory.Clear();
+        }
     }
 }
